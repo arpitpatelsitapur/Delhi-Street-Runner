@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <title>Delhi Street Runner : Run to save the Democracy</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: none
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none
+    }
+
+    body {
+      background: #0d1530;
+      color: #fff;
+      font-family: "Trebuchet MS", system-ui, sans-serif
+    }
+
+    #c {
+      position: fixed;
+      display: block;
+      background: #8fd0f0
+    }
+
+    button {
+      font: inherit;
+      color: #fff;
+      cursor: pointer
+    }
+
+    #top {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 0;
+      z-index: 5;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      padding: max(6px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) 16px max(10px, env(safe-area-inset-left));
+      background: linear-gradient(rgba(8, 14, 40, .7), transparent);
+      pointer-events: none
+    }
+
+    #hud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px 14px;
+      font: 700 clamp(12px, calc(2.2vmin + 4px), 17px) ui-monospace, monospace;
+      text-shadow: 0 1px 3px #000
+    }
+
+    #ttl {
+      width: 100%;
+      font: 700 clamp(11px, calc(1.6vmin + 3px), 16px) "Trebuchet MS", system-ui, sans-serif;
+      color: #ffc680
+    }
+
+    #hud b {
+      color: #ffc680
+    }
+
+    #sc {
+      display: inline-block
+    }
+
+    #mon {
+      color: #9fd8ff
+    }
+
+    #btns {
+      display: flex;
+      gap: 6px;
+      pointer-events: auto
+    }
+
+    .ib {
+      background: rgba(29, 42, 91, .85);
+      border: 2px solid #fff5;
+      border-radius: 8px;
+      padding: 5px 9px;
+      font-size: 13px;
+      white-space: nowrap
+    }
+
+    #ov {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(8, 14, 40, .62);
+      padding: 10px 10px 32px
+    }
+
+    #ov.h {
+      display: none
+    }
+
+    #box {
+      background: #14214f;
+      border: 3px solid #ffc680;
+      border-radius: 14px;
+      padding: 18px 22px;
+      text-align: center;
+      max-width: min(430px, 94vw);
+      max-height: calc(100vh - 64px);
+      overflow: auto;
+      box-shadow: 0 8px 30px #000a
+    }
+
+    #box h2 {
+      font-size: clamp(20px, 4vw, 28px);
+      color: #ffc680;
+      margin-bottom: 8px
+    }
+
+    #box p {
+      margin: 6px 0;
+      font-size: clamp(12px, 2.6vw, 15px);
+      line-height: 1.4
+    }
+
+    #tip {
+      display: none;
+      color: #9fd8ff
+    }
+
+    #go {
+      margin-top: 10px;
+      background: linear-gradient(#ff9933, #e57d12);
+      border: 0;
+      border-radius: 10px;
+      padding: 11px 26px;
+      font-size: 17px;
+      font-weight: 700;
+      box-shadow: 0 4px 0 #8a4a05
+    }
+
+    #go:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #8a4a05
+    }
+
+    #pad {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 5;
+      display: none;
+      justify-content: space-between;
+      padding: 0 max(12px, env(safe-area-inset-right)) calc(env(safe-area-inset-bottom, 0px) + 30px) max(12px, env(safe-area-inset-left));
+      pointer-events: none
+    }
+
+    #pad button {
+      pointer-events: auto;
+      width: clamp(110px, 24vw, 210px);
+      height: clamp(54px, 18vmin, 92px);
+      font-size: clamp(15px, 3vmin, 22px);
+      font-weight: 700;
+      border: 3px solid #fff8;
+      border-radius: 16px;
+      background: rgba(29, 42, 91, .7)
+    }
+
+    #pad #bj {
+      background: rgba(19, 136, 8, .75)
+    }
+
+    #pad button:active {
+      filter: brightness(1.5)
+    }
+
+    @media (pointer:coarse),
+    (max-width:760px) {
+      #pad {
+        display: flex
+      }
+    }
+
+    @media (orientation:portrait) {
+      #tip {
+        display: block
+      }
+    }
+
+    @media (max-height:460px) {
+      #ttl {
+        display: none
+      }
+    }
+
+    @media (max-height:430px) {
+      #box {
+        padding: 10px 16px
+      }
+
+      #box p {
+        margin: 3px 0
+      }
+
+      #go {
+        margin-top: 6px;
+        padding: 8px 22px
+      }
+    }
+
+    #cr {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 11;
+      text-align: center;
+      font: 600 clamp(10px, calc(1.2vmin + 6px), 13px) "Trebuchet MS", system-ui, sans-serif;
+      letter-spacing: .3px;
+      color: #fff;
+      padding: 3px 8px max(3px, env(safe-area-inset-bottom));
+      background: rgba(8, 14, 40, .7);
+      text-shadow: 0 1px 2px #000;
+      pointer-events: none
+    }
+
+    .p {
+      animation: p .45s
+    }
+
+    @keyframes p {
+      50% {
+        transform: scale(1.35);
+        color: #fff
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      .p {
+        animation: none
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="c" aria-label="Delhi Street Runner game"></canvas>
+  <div id="top">
+    <div id="hud">
+      <div id="ttl">Delhi Street Runner : Run to save the Democracy</div><span>SCORE <b id="sc">00000</b>
+        m</span><span>HI <b id="hi">00000</b> m</span><span id="mon">📍 Red Fort (Lal Qila)</span>
+    </div>
+    <div id="btns"><button class="ib" id="mute">🔊 Sound ON</button><button class="ib" id="fs">⛶ Full screen</button>
+    </div>
+  </div>
+  <div id="ov">
+    <div id="box">
+      <h2 id="t"></h2>
+      <p id="m"></p>
+      <p id="d"></p>
+      <p id="tip">Tip: rotate your phone to landscape for a bigger view.</p><button id="go"></button>
+    </div>
+  </div>
+  <div id="pad"><button id="bd">⬇ DUCK</button><button id="bj">⬆ JUMP</button></div>
+  <div id="cr">created by github@arpitpatelsitapur</div>
+  <script>
+    let W = 900, H = 420, G = 340;
+    const $ = i => document.getElementById(i), cv = $('c'), X = cv.getContext('2d'), SL = 640, PI = Math.PI, dpr0 = window.devicePixelRatio || 1;
+    const R = (x, y, w, h, c) => { X.fillStyle = c; X.fillRect(x, y, w, h) };
+    const C = (x, y, r, c) => { X.fillStyle = c; X.beginPath(); X.arc(x, y, r, 0, 7); X.fill() };
+    const D = (x, y, r, c, s = 1) => { X.fillStyle = c; X.beginPath(); X.ellipse(x, y, r, r * s, 0, PI, 0); X.fill() };
+    const Pg = (c, ...p) => { X.fillStyle = c; X.beginPath(); X.moveTo(p[0], p[1]); for (let i = 2; i < p.length; i += 2)X.lineTo(p[i], p[i + 1]); X.closePath(); X.fill() };
+    const A = (x, y, w, h, c) => { R(x - w / 2, y, w, h, c); D(x, y, w / 2, c) };
+    function chakra(x, y, r, c) { X.strokeStyle = c; X.lineWidth = 1; X.beginPath(); X.arc(x, y, r, 0, 7); for (let i = 0; i < 24; i++) { const a = i * PI / 12; X.moveTo(x, y); X.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r) } X.stroke() }
+
+    /* ---------- Audio (Web Audio, 8-bit) ---------- */
+    let AC, mute = false;
+    function snd(f, t, type = 'square', v = .15, f2, at = 0) { if (mute) return; try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state == 'suspended') AC.resume(); const n = AC.currentTime + at, o = AC.createOscillator(), g = AC.createGain(); o.type = type; o.frequency.setValueAtTime(f, n); if (f2) o.frequency.exponentialRampToValueAtTime(f2, n + t); g.gain.setValueAtTime(v, n); g.gain.exponentialRampToValueAtTime(.001, n + t); o.connect(g); g.connect(AC.destination); o.start(n); o.stop(n + t) } catch (e) { } }
+    const sJump = () => snd(260, .16, 'square', .14, 620), sOver = () => { snd(180, .6, 'sawtooth', .2, 40); snd(90, .6, 'square', .14, 30) }, sMile = () => { snd(880, .08); snd(1320, .14, 'square', .12, 0, .09) };
+
+    /* ---------- State ---------- */
+    let st = 'ready', sp = 6, dist = 0, sc = 0, hi = 0, tt = 0, ph = 0, obs = [], gap = 500, sd = 0, shake = 0, mile = 0, dk = false, cpx = 55, why = '', ot = 0, curM = -1, nb = false, shown = true;
+    const P = { x: 220, y: G, vy: 0, duck: false };
+    try { hi = +localStorage.getItem('dsr_hi') || 0 } catch (e) { }
+    const MN = ['Red Fort (Lal Qila)', 'Qutub Minar', 'India Gate', 'Parliament (Sansad Bhavan)', 'Supreme Court of India', 'Jama Masjid', 'Rashtrapati Bhavan'];
+    const WHY = { barricade: 'You crashed into a Delhi Police barricade!', cone: 'You tripped over a traffic cone!', block: 'You slammed into a stone road block!', drone: 'A surveillance drone spotted you. You needed to duck!' };
+
+    function reset() { sp = 6; dist = 0; sc = 0; obs = []; gap = 500; sd = 0; shake = 0; mile = 0; P.y = G; P.vy = 0; P.duck = false; cpx = 55 }
+    function start() { reset(); st = 'run'; $('ov').classList.add('h'); snd(440, .06, 'square', .1, 880) }
+    function jump() { if (st == 'ready') return start(); if (st == 'over') { if (performance.now() - ot > 600) start(); return } if (P.y >= G) { P.vy = -14.5; sJump() } }
+    function show() { const o = st == 'over'; $('t').textContent = o ? 'Caught by the Police!' : 'Delhi Street Runner'; $('m').textContent = o ? why : 'Run to save the Democracy! Carry the Tiranga high, outrun the Delhi Police, and dodge barricades, cones, road blocks and surveillance drones.'; $('d').innerHTML = o ? 'Distance covered: <b>' + (sc | 0) + ' m</b> · Best: <b>' + hi + ' m</b>' + (nb ? '<br>🏆 New record!' : '') : 'Space / ↑ to jump · ↓ to duck<br>or use the on-screen buttons'; $('go').textContent = o ? 'Run Again' : 'Start Running'; $('ov').classList.remove('h') }
+    function die(o) { st = 'over'; why = WHY[o.t]; ot = performance.now(); shake = 14; sOver(); nb = sc > hi; if (nb) { hi = sc | 0; try { localStorage.setItem('dsr_hi', hi) } catch (e) { } } shown = false }
+    function spawn() {
+      const x = W + 60;
+      if (sc > 120 && Math.random() < .3) obs.push({ t: 'drone', x, w: 52, h: 26, y: G - 78 });
+      else {
+        const q = Math.random(), T = q < .4 ? ['barricade', 66, 54] : q < .7 ? ['cone', 24, 38] : ['block', 46, 36]; obs.push({ t: T[0], x, w: T[1], h: T[2], y: G - T[2] });
+        if (sc > 250 && T[0] != 'barricade' && Math.random() < .25) obs.push({ t: T[0], x: x + T[1] + 44, w: T[1], h: T[2], y: G - T[2] })
+      }
+    }
+
+    /* ---------- Update ---------- */
+    function upd(k) {
+      tt += k; const run = st == 'run', s = run ? sp : st == 'ready' ? 2.6 : 0;
+      dist += s * k; if (s) ph += (.12 + s * .015) * k;
+      if (run) {
+        sp = Math.min(16 * Math.min(1, (W - P.x) / 680), 6 + sc / 140); sc = dist / 15;
+        P.duck = dk && P.y >= G;
+        P.vy += .8 * k * (dk && P.y < G ? 2.4 : 1); P.y += P.vy * k; if (P.y >= G) { P.y = G; P.vy = 0 }
+        sd += sp * k; if (sd > gap) { sd = 0; gap = sp * (40 + Math.random() * 32); spawn() }
+        const bx = P.x - 10, by = P.y - (P.duck ? 42 : 72);
+        for (const o of obs) {
+          o.x -= (sp + (o.t == 'drone' ? 2.5 : 0)) * k;
+          if (st == 'run' && bx < o.x + o.w - 5 && bx + 20 > o.x + 5 && by < o.y + o.h - 4 && P.y > o.y + 4) die(o)
+        }
+        obs = obs.filter(o => o.x > -120); cpx = 55 + Math.sin(tt * .05) * 6;
+        const m = Math.floor(sc / 100); if (m > mile) { mile = m; sMile(); const e = $('sc'); e.classList.remove('p'); void e.offsetWidth; e.classList.add('p') }
+      } else if (st == 'over') { cpx = Math.min(cpx + 6 * k, P.x - 48); shake *= .9; if (!shown && performance.now() - ot > 650) { shown = true; show() } }
+    }
+
+    /* ---------- Characters ---------- */
+    function human(x, y, p, pose, c) {
+      const dc = pose == 'duck', air = pose == 'jump', hy = dc ? y - 15 : y - 34, ln = dc ? -9 : 3, tl = dc ? 17 : 26;
+      X.lineCap = 'round'; X.lineJoin = 'round';
+      for (let i = 0; i < 2; i++) {
+        let a, b; const f = p + i * PI;
+        if (dc) { a = 1.35 - i * .15; b = a + .1 } else if (air) { a = i ? -.5 : .9; b = i ? -1.5 : .6 } else { a = Math.sin(f) * .8; b = a - .1 - Math.max(0, Math.cos(f)) }
+        const kx = x + Math.sin(a) * 17, ky = hy + Math.cos(a) * 17, fx = kx + Math.sin(b) * 17, fy = ky + Math.cos(b) * 17;
+        X.strokeStyle = i ? c.q : c.p; X.lineWidth = 9; X.beginPath(); X.moveTo(x, hy); X.lineTo(kx, ky); X.lineTo(fx, fy); X.stroke();
+        X.fillStyle = c.sh; X.beginPath(); X.ellipse(fx + 4, fy + 1, 7, 3.5, 0, 0, 7); X.fill()
+      }
+      const sx = x + ln, sy = hy - tl;
+      X.strokeStyle = c.s; X.lineWidth = 14; X.beginPath(); X.moveTo(x, hy); X.lineTo(sx, sy); X.stroke();
+      X.strokeStyle = c.bt; X.beginPath(); X.moveTo(x, hy); X.lineTo(x + (sx - x) * .16, hy + (sy - hy) * .16); X.stroke();
+      const hx = sx + (dc ? -3 : 2), hz = sy - 9; C(hx, hz, 7.5, c.skin);
+      if (c.hat) { X.fillStyle = c.hat; X.beginPath(); X.ellipse(hx + 1, hz - 5, 10, 5, -.15, 0, 7); X.fill(); C(hx + 5, hz - 5, 1.8, '#f5c542') }
+      else { X.fillStyle = '#1b1b1b'; X.beginPath(); X.arc(hx, hz, 8, PI * .95, PI * 2.05); X.fill() }
+      C(hx + 3, hz + 1, 1.2, '#222');
+      return { sx, sy }
+    }
+    function flag(x, y) {
+      const fy = y - 86, w = 58, h = 38, wv = i => Math.sin(i * .17 - tt * .3) * 4.5 * (i / w + .1);
+      X.strokeStyle = '#d8b256'; X.lineWidth = 3; X.beginPath(); X.moveTo(x, y); X.lineTo(x, fy - 2); X.stroke(); C(x, fy - 3, 3, '#f3d36a');
+      for (let i = 0; i < w; i += 2) { const o = wv(i); R(x + i, fy + o, 2.6, h / 3 + .6, '#ff9933'); R(x + i, fy + o + h / 3, 2.6, h / 3 + .6, '#fff'); R(x + i, fy + o + 2 * h / 3, 2.6, h / 3 + .6, '#138808') }
+      chakra(x + w / 2, fy + h / 2 + wv(w / 2), 5.2, '#000080')
+    }
+    function drawPlayer() {
+      const pose = P.y < G - 2 ? 'jump' : P.duck ? 'duck' : 'run', c = { p: '#2f63b8', q: '#244f96', s: '#20232f', sh: '#f2f2f2', skin: '#d9a273', bt: '#111' };
+      const h = human(P.x, P.y, ph, pose, c);
+      X.lineWidth = 6; X.strokeStyle = c.s; X.beginPath(); X.moveTo(h.sx, h.sy); X.lineTo(h.sx - 5 + Math.sin(ph) * 9, h.sy + 16); X.stroke();
+      const ax = h.sx + 11, ay = h.sy - 9; X.beginPath(); X.moveTo(h.sx, h.sy); X.lineTo(ax, ay); X.stroke(); C(ax, ay, 3.5, c.skin);
+      flag(ax, ay + 12)
+    }
+    function drawCop() {
+      const c = { p: '#a98f58', q: '#8f7745', s: '#c4a96a', sh: '#111', skin: '#c68b5e', bt: '#2a2a2a', hat: '#1b2a5c' }, cp = ph * .92 + 1, h = human(cpx, G, cp, 'run', c);
+      X.lineWidth = 6; X.strokeStyle = c.s; X.beginPath(); X.moveTo(h.sx, h.sy); X.lineTo(h.sx - 6 + Math.sin(cp) * 10, h.sy + 16); X.stroke();
+      const ax = h.sx + 12, ay = h.sy + 4 + Math.sin(cp * 2) * 3; X.beginPath(); X.moveTo(h.sx, h.sy); X.lineTo(ax, ay); X.stroke(); C(ax, ay, 3.5, c.skin);
+      const an = -1 + Math.sin(cp * 2) * .45; X.strokeStyle = '#6a3d17'; X.lineWidth = 5; X.beginPath(); X.moveTo(ax, ay); X.lineTo(ax + Math.cos(an) * 40, ay + Math.sin(an) * 40); X.stroke();
+      R(h.sx - 6, h.sy + 3, 4, 3, '#f5c542')
+    }
+
+    /* ---------- Obstacles ---------- */
+    function drawObs(o) {
+      const { x, y, w, h } = o;
+      if (o.t == 'barricade') {
+        X.strokeStyle = '#14214f'; X.lineWidth = 4; X.beginPath(); X.moveTo(x + 8, y + h); X.lineTo(x + 14, y + 26); X.moveTo(x + w - 8, y + h); X.lineTo(x + w - 14, y + 26); X.stroke();
+        R(x, y, w, 30, '#f6c500'); X.save(); X.beginPath(); X.rect(x, y, w, 30); X.clip(); X.strokeStyle = '#14214f'; X.lineWidth = 2; X.beginPath();
+        for (let i = -30; i < w + 30; i += 10) { X.moveTo(x + i, y); X.lineTo(x + i + 30, y + 30); X.moveTo(x + i + 30, y); X.lineTo(x + i, y + 30) } X.stroke(); X.restore();
+        R(x + 2, y + 9, w - 4, 12, '#14214f'); X.fillStyle = '#ffd400'; X.font = 'bold 7.5px Arial,sans-serif'; X.textAlign = 'center'; X.fillText('DELHI POLICE', x + w / 2, y + 18);
+        X.strokeStyle = '#14214f'; X.lineWidth = 2; X.strokeRect(x, y, w, 30)
+      }
+      else if (o.t == 'cone') { const m = x + w / 2; R(x - 2, y + h - 5, w + 4, 5, '#222'); Pg('#ff6a13', x + 3, y + h - 5, x + w - 3, y + h - 5, m + 3, y, m - 3, y); Pg('#fff', m - 5.4, y + 13, m + 5.4, y + 13, m + 7.2, y + 22, m - 7.2, y + 22) }
+      else if (o.t == 'block') {
+        Pg('#8d8f94', x, y + h, x + 4, y + 8, x + 14, y, x + w - 12, y + 2, x + w, y + 12, x + w - 3, y + h); R(x + 8, y + 5, w - 22, 3, '#a9abb0');
+        X.strokeStyle = '#5d5f64'; X.lineWidth = 1.5; X.beginPath(); X.moveTo(x + 12, y + 10); X.lineTo(x + 20, y + 20); X.lineTo(x + 16, y + h - 2); X.moveTo(x + 32, y + h); X.lineTo(x + 36, y + 14); X.stroke()
+      }
+      else {
+        const cy = y + 13 + Math.sin(tt * .15 + x * .03) * 2, m = x + w / 2, f = (tt / 7 | 0) % 2;
+        X.strokeStyle = '#1c1f28'; X.lineWidth = 3; X.beginPath(); X.moveTo(m - 20, cy - 6); X.lineTo(m - 6, cy - 1); X.moveTo(m + 20, cy - 6); X.lineTo(m + 6, cy - 1); X.stroke();
+        X.fillStyle = 'rgba(50,55,70,.5)'; for (const s of [-19, 19]) { X.beginPath(); X.ellipse(m + s, cy - 7, 6 + 9 * Math.abs(Math.cos(tt * 1.3 + s)), 2.5, 0, 0, 7); X.fill() }
+        X.fillStyle = '#2b2f3a'; X.beginPath(); X.ellipse(m, cy, 15, 8, 0, 0, 7); X.fill(); C(m, cy + 7, 4.5, '#0c0c10'); C(m + 1, cy + 6, 1.5, '#6fb3ff');
+        if (f) C(m - 10, cy - 1, 8, 'rgba(255,40,40,.3)'); else C(m + 10, cy - 1, 8, 'rgba(60,120,255,.35)');
+        C(m - 10, cy - 1, 3, f ? '#ff2b2b' : '#401010'); C(m + 10, cy - 1, 3, f ? '#102a60' : '#3a7bff')
+      }
+    }
+
+    /* ---------- Delhi monuments (x = centre, b = base) ---------- */
+    const MF = [
+      (x, b) => {
+        const c = '#a4412c', e = '#8c3322', h = '#c25a3f'; R(x - 190, b - 72, 380, 72, c); for (let i = 0; i < 38; i++)R(x - 190 + i * 10, b - 80, 6, 8, c);
+        R(x - 196, b - 96, 16, 96, e); R(x + 180, b - 96, 16, 96, e); D(x - 188, b - 96, 10, h); D(x + 188, b - 96, 10, h);
+        R(x - 52, b - 124, 104, 124, e); for (let i = 0; i < 10; i++)R(x - 52 + i * 10.5, b - 132, 6, 8, e);
+        for (const s of [-40, 0, 40]) { R(x + s - 8, b - 146, 3, 22, '#6e281c'); R(x + s + 5, b - 146, 3, 22, '#6e281c'); D(x + s, b - 146, 11, h); R(x + s - 1, b - 160, 2, 8, h) }
+        for (const s of [-168, -130, -92, 92, 130, 168]) A(x + s, b - 44, 20, 44, '#5a2016'); A(x, b - 70, 34, 70, '#35120c')
+      },
+      (x, b) => {
+        const H0 = 232; Pg('#b0522f', x - 24, b, x + 24, b, x + 11, b - H0, x - 11, b - H0);
+        for (let i = 1; i <= 5; i++) { const y = b - i * H0 / 5.3, w = 24 - i * 2.5; R(x - w - 5, y, 2 * w + 10, 5, '#7a301d') }
+        X.strokeStyle = 'rgba(70,25,12,.35)'; X.lineWidth = 1.2; X.beginPath(); for (let i = -3; i <= 3; i++) { X.moveTo(x + i * 6.5, b); X.lineTo(x + i * 3, b - H0) } X.stroke();
+        R(x - 13, b - H0 - 5, 26, 5, '#7a301d'); D(x, b - H0 - 5, 10, '#8c3a22'); R(x - 1, b - H0 - 22, 2, 9, '#7a301d');
+        R(x - 112, b - 46, 58, 46, '#9d4a2b'); A(x - 98, b - 34, 12, 34, '#4a1d10'); A(x - 70, b - 34, 12, 34, '#4a1d10')
+      },
+      (x, b) => {
+        const c = '#bf9660', e = '#a97f4b'; R(x - 64, b - 112, 128, 112, c); R(x - 72, b - 124, 144, 12, e); R(x - 60, b - 136, 120, 12, c); R(x - 46, b - 144, 92, 8, e);
+        A(x, b - 72, 52, 72, '#2b1d14'); Pg('#ff8a1f', x - 6, b - 2, x + 6, b - 2, x, b - 20); Pg('#ffd25a', x - 3, b - 2, x + 3, b - 2, x, b - 12); R(x - 9, b - 4, 18, 4, '#111')
+      },
+      (x, b) => {
+        const c = '#cdb892'; Pg(c, x - 195, b, x - 195, b - 48, x - 105, b - 104, x - 15, b - 48, x - 15, b);
+        X.strokeStyle = '#a99472'; X.lineWidth = 2; X.beginPath(); for (let i = 0; i <= 6; i++) { X.moveTo(x - 105, b - 104); X.lineTo(x - 195 + i * 30, b) } X.stroke();
+        R(x - 105, b - 130, 1.5, 26, '#555'); R(x - 104, b - 130, 13, 3, '#f93'); R(x - 104, b - 127, 13, 3, '#fff'); R(x - 104, b - 124, 13, 3, '#138808');
+        R(x + 15, b - 62, 182, 62, '#d8c3a0'); for (let i = 0; i < 18; i++)R(x + 18 + i * 10, b - 58, 4, 58, '#9c8868'); R(x + 10, b - 72, 192, 10, c);
+        D(x + 106, b - 72, 32, '#e2d3b4', .65); R(x + 105, b - 103, 2, 12, '#8a7757')
+      },
+      (x, b) => {
+        const c = '#dcd3c0', e = '#b8ad96'; R(x - 160, b - 58, 320, 58, c); R(x - 62, b - 92, 124, 92, c); R(x - 28, b - 124, 56, 34, e); D(x, b - 124, 30, '#e9e1d0', .95); R(x - 1, b - 158, 2, 14, e);
+        for (const s of [-1, 1]) for (let i = 0; i < 7; i++)R(x + s * (78 + i * 11) - 4, b - 42, 8, 18, '#a79b83');
+        Pg(e, x - 66, b - 92, x + 66, b - 92, x, b - 112); for (let i = 0; i < 9; i++)R(x - 56 + i * 14, b - 88, 7, 88, '#f1ebdc'); chakra(x, b - 97, 6, '#1a2a6c')
+      },
+      (x, b) => {
+        const r = '#a8402c', w = '#ece4d4'; R(x - 150, b - 34, 300, 34, r); R(x - 110, b - 74, 220, 40, r); R(x - 34, b - 116, 68, 82, r); A(x, b - 92, 34, 58, '#3a1812');
+        D(x - 70, b - 74, 26, w, 1.1); D(x + 70, b - 74, 26, w, 1.1); D(x, b - 116, 36, w, 1.15); R(x - 1, b - 164, 2, 10, w); R(x - 71, b - 106, 2, 8, w); R(x + 69, b - 106, 2, 8, w);
+        for (const m of [-165, 165]) { for (let i = 0; i < 8; i++)R(x + m - 7, b - 22 * i - 22, 14, 22, i % 2 ? w : r); R(x + m - 10, b - 180, 20, 4, w); D(x + m, b - 180, 9, w); R(x + m - 1, b - 198, 2, 9, w) }
+      },
+      (x, b) => {
+        const c = '#d6a88a', e = '#b98467'; R(x - 170, b - 52, 340, 52, c); R(x - 62, b - 84, 124, 84, c); R(x - 34, b - 128, 68, 46, e); D(x, b - 128, 36, '#d9c8ae', .9); R(x - 1, b - 172, 2, 12, e);
+        for (let i = 0; i < 16; i++)R(x - 56 + i * 7.4, b - 80, 3, 80, '#efd7c0');
+        for (const s of [-110, 110]) { R(x + s - 14, b - 70, 28, 18, e); D(x + s, b - 70, 14, '#d9c8ae') }
+        R(x + 212, b - 150, 6, 150, '#e4cfa8'); R(x + 208, b - 158, 14, 8, '#e4cfa8'); Pg('#f3d36a', x + 215, b - 184, x + 221, b - 168, x + 215, b - 158, x + 209, b - 168)
+      }
+    ];
+
+    /* ---------- Render ---------- */
+    function draw() {
+      X.save(); if (shake > .5) X.translate((Math.random() - .5) * shake, (Math.random() - .5) * shake);
+      const g = X.createLinearGradient(0, 0, 0, G); g.addColorStop(0, '#5db3e8'); g.addColorStop(.65, '#fff0cf'); g.addColorStop(1, '#ffd49a'); X.fillStyle = g; X.fillRect(-20, -20, W + 40, G + 20);
+      C(W - 160, G * .2, 38, 'rgba(255,248,215,.95)');
+      X.fillStyle = 'rgba(255,255,255,.7)'; const cl = dist * .04, CL = Math.ceil((W + 200) / 260) * 260;
+      for (let i = 0; i < CL / 260; i++) { const x = ((i * 260 - cl) % CL + CL) % CL - 100, y = G * .1 + i % 3 * G * .07; X.beginPath(); X.ellipse(x, y, 48, 12, 0, 0, 7); X.fill(); X.beginPath(); X.ellipse(x + 24, y - 8, 30, 11, 0, 0, 7); X.fill() }
+      const f = dist * .12; for (let i = 0; i < W / 40 + 2; i++) { const n = i + Math.floor(f / 40); R(i * 40 - f % 40, G - 22 - (n * 53 % 9) * 6, 40, 200, '#d4c3aa') }
+      X.fillStyle = 'rgba(255,236,205,.4)'; X.fillRect(0, 0, W, G);
+      const mo = dist * .35, k0 = Math.floor(mo / SL); X.globalAlpha = .94; for (let j = k0; j <= k0 + 2; j++)MF[j % 7](j * SL + SL / 2 - mo, G); X.globalAlpha = 1;
+      const cm = Math.floor((mo + W / 2) / SL) % 7; if (cm != curM) { curM = cm; $('mon').textContent = '📍 ' + MN[cm] }
+      R(0, G - 8, W, 8, '#4f8a3a'); R(0, G, W, 12, '#b8b1a4');
+      const q = dist % 60; for (let i = -1; i < W / 60 + 1; i++) { const x = i * 60 - q; R(x, G, 20, 6, '#ff9933'); R(x + 20, G, 20, 6, '#fff'); R(x + 40, G, 20, 6, '#138808') }
+      R(0, G + 12, W, H - G - 12, '#3a3a44'); R(0, G + 12, W, 3, '#2a2a32'); const r = dist % 100; for (let i = -1; i < W / 100 + 1; i++)R(i * 100 - r + 10, G + 62, 50, 4, '#e9e2c8');
+      obs.forEach(drawObs); drawCop(); drawPlayer(); X.restore();
+      $('sc').textContent = String(sc | 0).padStart(5, '0'); $('hi').textContent = String(Math.max(hi, sc | 0)).padStart(5, '0')
+    }
+
+    /* ---------- Input ---------- */
+    addEventListener('keydown', e => {
+      const k = e.code;
+      if (k == 'Space' || k == 'ArrowUp' || k == 'KeyW') { e.preventDefault(); if (!e.repeat) jump() }
+      else if (k == 'ArrowDown' || k == 'KeyS') { e.preventDefault(); dk = true }
+      else if (k == 'Enter' && st != 'run') { jump() } else if (k == 'KeyF') fsTog()
+    });
+    addEventListener('keyup', e => { if (e.code == 'ArrowDown' || e.code == 'KeyS') dk = false });
+    const hold = (el, on, off) => { el.addEventListener('pointerdown', e => { e.preventDefault(); on() });['pointerup', 'pointerleave', 'pointercancel'].forEach(n => el.addEventListener(n, off)) };
+    hold($('bj'), jump, () => { }); hold($('bd'), () => { dk = true; if (st != 'run') jump() }, () => { dk = false });
+    cv.addEventListener('pointerdown', e => { e.preventDefault(); if (st == 'run') jump() });
+    $('go').onclick = function () { this.blur(); start() };
+    $('mute').onclick = function () { mute = !mute; this.textContent = mute ? '🔇 Sound OFF' : '🔊 Sound ON'; this.blur() };
+
+    /* ---------- Fullscreen + responsive fit ---------- */
+    function fit() {
+      const vw = innerWidth, vh = innerHeight, a = vw / vh, oG = G;
+      W = 900; H = W / a; if (H < 400) { H = 400; W = Math.min(1300, H * a) } else if (H > 640) { H = 640; W = Math.max(700, H * a) }
+      W = Math.round(W); H = Math.round(H); G = H - 80;
+      const s = Math.min(vw / W, vh / H), cw = Math.round(W * s), ch = Math.round(H * s), ps = Math.min(dpr0, 2, 2200 / cw);
+      cv.style.width = cw + 'px'; cv.style.height = ch + 'px'; cv.style.left = Math.round((vw - cw) / 2) + 'px'; cv.style.top = Math.round((vh - ch) / 2) + 'px';
+      cv.width = Math.round(cw * ps); cv.height = Math.round(ch * ps); X.setTransform(cv.width / W, 0, 0, cv.height / H, 0, 0);
+      P.x = Math.max(170, Math.round(W * .22)); const d = G - oG; P.y += d; obs.forEach(o => o.y += d)
+    }
+    const de = document.documentElement, rq = de.requestFullscreen || de.webkitRequestFullscreen, fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
+    function fsTog() { if (fsEl()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document) } else if (rq) { const lk = () => { try { screen.orientation.lock('landscape').catch(() => { }) } catch (e) { } }, p = rq.call(de); p && p.then ? p.then(lk).catch(() => { }) : lk() } }
+    if (!rq) $('fs').style.display = 'none';
+    $('fs').onclick = function () { fsTog(); this.blur() };
+    const onR = () => { fit(); $('fs').textContent = fsEl() ? '✕ Exit full screen' : '⛶ Full screen' };
+    addEventListener('resize', () => { onR(); setTimeout(onR, 250) }); addEventListener('orientationchange', () => setTimeout(onR, 300));
+    document.addEventListener('fullscreenchange', onR); document.addEventListener('webkitfullscreenchange', onR);
+    if (window.visualViewport) visualViewport.addEventListener('resize', fit);
+
+    /* ---------- Loop ---------- */
+    let last = performance.now();
+    function loop(n) { const k = Math.min((n - last) / 16.667, 3); last = n; upd(k); draw(); requestAnimationFrame(loop) }
+    fit(); reset(); show(); requestAnimationFrame(loop);
+  </script>
+</body>
+
+</html>
